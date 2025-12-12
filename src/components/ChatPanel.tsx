@@ -296,47 +296,83 @@ export function ChatPanel({ messages, onMessagesChange, sessionId, onSessionChan
     localStorage.setItem("promoagente-session", newSessionId);
   };
 
-  // ✅ NOVO: Função para confirmar promoção e adicionar ao histórico da sessão
+  // ✅ Função para confirmar promoção(ões) - envia tudo de uma vez ao backend
   const handleConfirm = async (promotionData: any) => {
-    console.log('✅ Confirmando promoção:', promotionData);
+    console.log('✅ Confirmando promoção(ões):', promotionData);
     setIsSending(true);
 
     try {
-      // Chama API para salvar no banco
       const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://promo-functions-cpa5ajcfftdgawc2.canadacentral-01.azurewebsites.net';
+      
+      // Detecta se é múltiplas promoções (array) ou única (objeto)
+      const isMultiple = Array.isArray(promotionData);
+      
+      // Adiciona session_id a cada promoção
+      let dataToSend;
+      if (isMultiple) {
+        dataToSend = promotionData.map(promo => ({ ...promo, session_id: currentSession }));
+      } else {
+        dataToSend = { ...promotionData, session_id: currentSession };
+      }
+      
+      console.log(`📤 Enviando ${isMultiple ? dataToSend.length : 1} promoção(ões) para /api/confirm`);
+      console.log('📤 Payload:', dataToSend);
+      
       const response = await fetch(`${apiBaseUrl}/api/confirm`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          ...promotionData,
-          session_id: currentSession
-        })
+        body: JSON.stringify(dataToSend)
       });
 
+      console.log(`📥 Response status: ${response.status}`);
+
       if (!response.ok) {
-        throw new Error(`Erro ao confirmar: ${response.status}`);
+        let errorText = '';
+        try {
+          errorText = await response.text();
+          console.error('📥 Error response body:', errorText);
+        } catch (e) {
+          console.error('Não foi possível ler o corpo do erro');
+        }
+        throw new Error(`Erro ${response.status}: ${errorText.substring(0, 300)}`);
       }
 
       const result = await response.json();
-      console.log('📋 Promoção confirmada:', result);
+      console.log('📥 Response:', result);
+      
+      // Extrai promoções salvas
+      const savedPromotions = result.promotions || (result.promotion ? [result.promotion] : []);
+      const totalSaved = result.total_saved || savedPromotions.length;
+      const totalErrors = result.total_errors || 0;
+      
+      if (totalSaved > 0) {
+        // Mensagem de sucesso
+        let successContent = `✅ **${totalSaved} promoção(ões) confirmada(s) e salva(s) com sucesso!**`;
+        
+        if (totalErrors > 0 && result.errors) {
+          const errorTitles = result.errors.map((e: any) => e.titulo).join(', ');
+          successContent += `\n\n⚠️ ${totalErrors} falha(s): ${errorTitles}`;
+        }
+        
+        const successMessage: ChatMessage = {
+          id: crypto.randomUUID(),
+          role: "agent",
+          content: successContent,
+          timestamp: new Date().toISOString()
+        };
+        onMessagesChange([...messages, successMessage]);
 
-      // Adiciona mensagem de sucesso no chat
-      const successMessage: ChatMessage = {
-        id: crypto.randomUUID(),
-        role: "agent",
-        content: "✅ **Promoção confirmada e salva com sucesso!** Ela foi adicionada ao histórico desta sessão.",
-        timestamp: new Date().toISOString()
-      };
-      onMessagesChange([...messages, successMessage]);
+        // Adiciona ao histórico da sessão
+        if (onPromotionConfirmed) {
+          savedPromotions.forEach((promo: any) => onPromotionConfirmed(promo));
+        }
 
-      // Callback para adicionar ao histórico da sessão (HistoryPanel)
-      if (onPromotionConfirmed) {
-        onPromotionConfirmed(result.promotion || promotionData);
-      }
-
-      // Limpa o preview
-      if (onStateChange) {
-        onStateChange(null);
+        // Limpa o preview
+        if (onStateChange) {
+          onStateChange(null);
+        }
+      } else {
+        throw new Error('Nenhuma promoção foi salva com sucesso');
       }
 
     } catch (error) {
