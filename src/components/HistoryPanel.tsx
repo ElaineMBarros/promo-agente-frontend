@@ -56,7 +56,7 @@ const PromoList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-height: calc(100vh - 200px);  /* ✅ Altura máxima dinâmica */
+  max-height: calc(100vh - 220px);  /* ✅ Altura máxima otimizada */
   overflow-y: auto;  /* ✅ Scroll vertical quando necessário */
   padding-right: 8px;  /* ✅ Espaço para scrollbar */
   

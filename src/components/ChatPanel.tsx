@@ -94,6 +94,25 @@ const ScrollArea = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
+  
+  /* Estilização da scrollbar */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: ${({ theme }) => theme.colors.primary};
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: ${({ theme }) => theme.colors.secondary};
+  }
 `;
 
 const MessageBubble = styled.div<{ $origin: "user" | "agent" }>`
