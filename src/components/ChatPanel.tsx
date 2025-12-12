@@ -541,14 +541,12 @@ export function ChatPanel({ messages, onMessagesChange, sessionId, onSessionChan
         </ButtonGroup>
       </ChatHeader>
       <ScrollArea>
-        {/* ✅ ORDEM CORRETA: Intercala mensagens de usuário e agente na ordem cronológica */}
+        {/* ✅ SEMPRE mostra todas as mensagens (user e agent) */}
         {messages.map(message => (
-          !shouldHideMessage(message) && (
-            <MessageBubble key={message.id} $origin={message.role}>
-              <ReactMarkdown>{message.content}</ReactMarkdown>
-              <MessageMeta>{formatTimestamp(message.timestamp)}</MessageMeta>
-            </MessageBubble>
-          )
+          <MessageBubble key={message.id} $origin={message.role}>
+            <ReactMarkdown>{message.content}</ReactMarkdown>
+            <MessageMeta>{formatTimestamp(message.timestamp)}</MessageMeta>
+          </MessageBubble>
         ))}
         
         {/* Preview de dados coletados - APARECE POR ÚLTIMO, após todas as mensagens */}
