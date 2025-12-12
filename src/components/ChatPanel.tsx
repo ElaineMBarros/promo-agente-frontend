@@ -89,29 +89,35 @@ const ButtonGroup = styled.div`
 
 const ScrollArea = styled.div`
   flex: 1;
-  overflow-y: auto;
+  overflow-y: auto;  /* Scroll vertical independente */
+  overflow-x: hidden;
   padding-right: 8px;
+  margin-right: -8px;  /* Compensa padding */
   display: flex;
   flex-direction: column;
   gap: 16px;
   
-  /* Estilização customizada da scrollbar - v2 */
+  /* Scrollbar customizada - bem visível */
   &::-webkit-scrollbar {
-    width: 10px;
+    width: 12px;
   }
   
   &::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 5px;
+    background: rgba(31, 60, 136, 0.08);
+    border-radius: 6px;
+    margin: 4px 0;
   }
   
   &::-webkit-scrollbar-thumb {
     background: ${({ theme }) => theme.colors.primary};
-    border-radius: 5px;
-    
-    &:hover {
-      background: ${({ theme }) => theme.colors.secondary};
-    }
+    border-radius: 6px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: ${({ theme }) => theme.colors.secondary};
+    background-clip: padding-box;
   }
 `;
 

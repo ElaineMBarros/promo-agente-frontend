@@ -48,6 +48,10 @@ const Sidebar = styled.aside`
   padding: 24px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.04);
   border: 1px solid rgba(31, 60, 136, 0.08);
+  height: calc(100vh - 140px);  /* Altura fixa menos header e padding */
+  overflow: hidden;  /* Scroll será no PromoList interno */
+  display: flex;
+  flex-direction: column;
 `;
 
 const Main = styled.section`
@@ -58,6 +62,8 @@ const Main = styled.section`
   border: 1px solid rgba(31, 60, 136, 0.08);
   display: flex;
   flex-direction: column;
+  height: calc(100vh - 140px);  /* Altura fixa menos header e padding */
+  overflow: hidden;  /* Scroll será no ScrollArea interno */
 `;
 
 export function Layout({ header, sidebar, main }: LayoutProps) {

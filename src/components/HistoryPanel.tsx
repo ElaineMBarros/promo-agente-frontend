@@ -9,6 +9,13 @@ interface HistoryPanelProps {
   onPromotionUpdated?: (promotion: PromotionRecord) => void;  // ✅ MUDADO: Recebe a promoção atualizada
 }
 
+const PanelWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+`;
+
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
@@ -56,27 +63,33 @@ const PromoList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-height: calc(100vh - 220px);  /* ✅ Altura máxima otimizada */
-  overflow-y: auto;  /* ✅ Scroll vertical quando necessário */
-  padding-right: 8px;  /* ✅ Espaço para scrollbar */
+  flex: 1;  /* Ocupa todo espaço disponível */
+  overflow-y: auto;  /* Scroll vertical independente */
+  overflow-x: hidden;
+  padding-right: 8px;  /* Espaço para scrollbar */
+  margin-right: -8px;  /* Compensa padding para alinhar */
   
-  /* Estilização da scrollbar */
+  /* Scrollbar customizada - bem visível */
   &::-webkit-scrollbar {
-    width: 8px;
+    width: 12px;
   }
   
   &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
+    background: rgba(31, 60, 136, 0.08);
+    border-radius: 6px;
+    margin: 4px 0;
   }
   
   &::-webkit-scrollbar-thumb {
     background: ${({ theme }) => theme.colors.primary};
-    border-radius: 4px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
   }
   
   &::-webkit-scrollbar-thumb:hover {
     background: ${({ theme }) => theme.colors.primaryDark || '#1a3170'};
+    background-clip: padding-box;
   }
 `;
 
@@ -244,7 +257,7 @@ export function HistoryPanel({ records, sessionId, onPromotionUpdated }: History
 
   if (records.length === 0) {
     return (
-      <div>
+      <PanelWrapper>
         <Header>
           <Title>📋 Promoções desta sessão</Title>
         </Header>
@@ -252,7 +265,7 @@ export function HistoryPanel({ records, sessionId, onPromotionUpdated }: History
           Nenhuma promoção confirmada nesta sessão ainda.<br />
           Confirme uma promoção no chat para vê-la aqui.
         </EmptyState>
-      </div>
+      </PanelWrapper>
     );
   }
 
@@ -260,7 +273,7 @@ export function HistoryPanel({ records, sessionId, onPromotionUpdated }: History
   const sessionRecords = [...records].reverse();
 
   return (
-    <div>
+    <PanelWrapper>
       <Header>
         <Title>📋 Promoções desta sessão</Title>
         <ExportAllButton 
@@ -344,6 +357,6 @@ export function HistoryPanel({ records, sessionId, onPromotionUpdated }: History
           }}
         />
       )}
-    </div>
+    </PanelWrapper>
   );
 }
