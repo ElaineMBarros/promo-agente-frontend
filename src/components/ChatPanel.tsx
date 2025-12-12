@@ -95,23 +95,23 @@ const ScrollArea = styled.div`
   flex-direction: column;
   gap: 16px;
   
-  /* Estilização da scrollbar */
+  /* Estilização customizada da scrollbar - v2 */
   &::-webkit-scrollbar {
-    width: 8px;
+    width: 10px;
   }
   
   &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 5px;
   }
   
   &::-webkit-scrollbar-thumb {
     background: ${({ theme }) => theme.colors.primary};
-    border-radius: 4px;
-  }
-  
-  &::-webkit-scrollbar-thumb:hover {
-    background: ${({ theme }) => theme.colors.secondary};
+    border-radius: 5px;
+    
+    &:hover {
+      background: ${({ theme }) => theme.colors.secondary};
+    }
   }
 `;
 
